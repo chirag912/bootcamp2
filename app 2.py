@@ -1,22 +1,61 @@
 import streamlit as st
-import pickle
 import numpy as np
+import pickle
 
-# Load the trained model
-with open('model.pkl', 'rb') as file:
-    model = pickle.load(file)
+# Load the model
+with open('random_forest_classifier.pkl', 'rb') as f:
+    model = pickle.load(f)
 
-# App Title
-st.title("ML Model Prediction App")
+# Streamlit UI
+st.title("Cancer Prediction Web App")
+st.write("🔍 This app uses a Random Forest Classifier to predict whether follow-up is required based on clinical features.")
 
-# User Inputs (example: 3 features)
-st.subheader("Enter input features:")
-feature1 = st.number_input("Feature 1", min_value=0.0)
-feature2 = st.number_input("Feature 2", min_value=0.0)
-feature3 = st.number_input("Feature 3", min_value=0.0)
+# Collect user input
+age = st.number_input("Age", min_value=0, max_value=120, value=30)
+gender = st.selectbox("Gender", options={0: "Male", 1: "Female"})
+tumor_size = st.number_input("Tumor Size (in cm)", min_value=0.0, value=2.5)
+location = st.selectbox("Tumor Location", options={0: "Lung", 1: "Liver", 2: "Breast", 3: "Brain"})  # Update as per your values
+histology = st.selectbox("Histology Type", options={0: "Type A", 1: "Type B", 2: "Type C"})          # Update as per your values
+stage = st.selectbox("Cancer Stage", options={0: "Stage 0", 1: "Stage 1", 2: "Stage 2", 3: "Stage 3", 4: "Stage 4"})
 
-# Make prediction
-if st.button("Predict"):
-    input_data = np.array([[feature1, feature2, feature3]])
-    prediction = model.predict(input_data)
-    st.success(f"Prediction: {prediction[0]}")
+symptom_1 = st.selectbox("Symptom 1", options=[0, 1])
+symptom_2 = st.selectbox("Symptom 2", options=[0, 1])
+symptom_3 = st.selectbox("Symptom 3", options=[0, 1])
+radiation = st.selectbox("Radiation Treatment Received", options=[0, 1])
+surgery = st.selectbox("Surgery Performed", options=[0, 1])
+chemo = st.selectbox("Chemotherapy Received", options=[0, 1])
+
+survival_rate = st.number_input("Survival Rate (%)", min_value=0.0, max_value=100.0, value=75.0)
+tumor_growth_rate = st.number_input("Tumor Growth Rate", min_value=0.0, value=1.2)
+
+family_history = st.selectbox("Family History of Cancer", options=[0, 1])
+mri_result = st.selectbox("MRI Result Abnormality", options=[0, 1])
+
+# Button to predict
+if st.button("Predict Follow-up Requirement"):
+    input_data = np.array([[
+        age,
+        0 if gender == "Male" else 1,
+        tumor_size,
+        location,
+        histology,
+        stage,
+        symptom_1,
+        symptom_2,
+        symptom_3,
+        radiation,
+        surgery,
+        chemo,
+        survival_rate,
+        tumor_growth_rate,
+        family_history,
+        mri_result
+    ]])
+
+    # Prediction
+    prediction = model.predict(input_data)[0]
+
+    if prediction == 1:
+        st.error("🔴 Follow-up is Required")
+    else:
+        st.success("🟢 No Follow-up Required")
