@@ -8,7 +8,7 @@ with open('random_forest_classifier.pkl', 'rb') as f:
 
 # Streamlit UI
 st.title("Cancer Prediction Web App")
-st.write("🔍 This app uses a Random Forest Classifier to predict whether follow-up is required based on clinical features.")
+st.write("🔍 This app uses a Random Forest Classifier to predict type of cancer.")
 
 # Collect user input
 age = st.number_input("Age", min_value=0, max_value=120, value=30)
